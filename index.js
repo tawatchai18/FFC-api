@@ -371,7 +371,6 @@ function perPersonData(result) {
             }
             else {
                 data['9'].female += 1
-                data['9'].undefined++
             }
         }
         else {
