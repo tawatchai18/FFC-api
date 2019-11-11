@@ -13,14 +13,14 @@ const corsOptions = {
 }
 
 // ตารางปิรามิดประชากร
-app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get('/pyramid', cors(corsOptions),cache('12 hour'), (req, res) => {
     // const orgId = req.params.orgId;
     // console.log(orgId, 'perPersonData');
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = { "death.date": { "$exists": false } };
+        var query = {"death.date":{"$exists":false}};
         dbo.collection("person").find(query).toArray((err, result) => {
             if (err) throw err;
             if (!Array.isArray) {
@@ -34,14 +34,14 @@ app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // idorg
-app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get('/pyramid/:orgId', cors(corsOptions),cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = { "orgId": orgId };
+        var query = { "orgId": orgId,"death.date":{"$exists":false}};
         dbo.collection("person").find(query).toArray((err, result) => {
             if (err) throw err;
             if (!Array.isArray) {
@@ -55,7 +55,7 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // ชื่อหน่วยงาน
-app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get('/convert', cors(corsOptions),cache('12 hour'), (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
@@ -84,7 +84,7 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // อัตราส่วนผู้สูงอายุ
-app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get('/elderlyrat', cors(corsOptions),cache('12 hour'), (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
