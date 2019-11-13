@@ -13,14 +13,12 @@ const corsOptions = {
 }
 
 // ตารางปิรามิดประชากร
-app.get('/pyramid', cors(corsOptions),cache('12 hour'), (req, res) => {
-    // const orgId = req.params.orgId;
-    // console.log(orgId, 'perPersonData');
+app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = {"death.date":{"$exists":false}};
+        var query = { "death.date": { "$exists": false } };
         dbo.collection("person").find(query).toArray((err, result) => {
             if (err) throw err;
             if (!Array.isArray) {
@@ -34,14 +32,14 @@ app.get('/pyramid', cors(corsOptions),cache('12 hour'), (req, res) => {
 });
 
 // idorg
-app.get('/pyramid/:orgId', cors(corsOptions),cache('12 hour'), (req, res) => {
+app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = { "orgId": orgId,"death.date":{"$exists":false}};
+        var query = { "orgId": orgId, "death.date": { "$exists": false } };
         dbo.collection("person").find(query).toArray((err, result) => {
             if (err) throw err;
             if (!Array.isArray) {
@@ -55,7 +53,7 @@ app.get('/pyramid/:orgId', cors(corsOptions),cache('12 hour'), (req, res) => {
 });
 
 // ชื่อหน่วยงาน
-app.get('/convert', cors(corsOptions),cache('12 hour'), (req, res) => {
+app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
@@ -84,123 +82,149 @@ app.get('/convert', cors(corsOptions),cache('12 hour'), (req, res) => {
 });
 
 // อัตราส่วนผู้สูงอายุ
-app.get('/elderlyrat', cors(corsOptions),cache('12 hour'), (req, res) => {
+app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
     MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = { "healthAnalyze.result.ACTIVITIES.severity": "MID", }
-        var query1 = { "healthAnalyze.result.ACTIVITIES.severity": "OK", }
-        var query2 = { "healthAnalyze.result.ACTIVITIES.severity": "VERY_HI", }
-        // var query = {}
-        var data = [
-            {
-                0: "MID",
-                "mid": 0
-            },
-            {
-                1: "OK",
-                "ok": 300
-            },
-            {
-                2: "VERY_HI",
-                "veryhi": 400
-            },
-            {
-                2: "othor",
-                "null": 100
-            }
-        ]
-        dbo.collection("person").find(query, query1, query2).toArray((err, arr) => {
+        var q = {
+            "death.date": { "$exists": false }, $or: [
+                { "healthAnalyze.result.ACTIVITIES.severity": "MID" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "OK" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "VERY_HI" }
+            ]
+        }
+        dbo.collection("person").find(q).toArray((err, arr) => {
             if (err) throw err;
             if (!Array.isArray) {
                 Array.isArray = function (arg) {
                     return Object.prototype.toString.call(arg) === '[object Array]';
                 };
             }
-            arr.forEach((item) => {
-                if (item.healthAnalyze.result.ACTIVITIES.severity === 'MID') {
-                    data['0'].mid += 1;
-                }
-                else if (item.healthAnalyze.result.ACTIVITIES.severity === 'OK') {
-                    data['1'].ok += 1;
-                }
-                else if (item.healthAnalyze.result.ACTIVITIES.severity === 'VERY_HI') {
-                    data['2'].veryhi += 1;
-                }
-                else if (item.healthAnalyze.result.ACTIVITIES.severity === 'null') {
-                    data['3'].null += 1;
-                }
-            })
-            var dataArray = [
-                {
-                    "name": "ติดบ้าน",
-                    "peple": data['0'].mid
-                },
-                {
-                    "name": "ติดสังคม",
-                    "peple": data['1'].ok
-                },
-                {
-                    "name": "ติดเตียง",
-                    "peple": data['2'].veryhi
-                },
-                {
-                    "name": "ไม่ระบุ",
-                    "peple": data['3'].null
-                }
-            ]
-            res.json(dataArray)
-            console.log(dataArray, 'you ploblem');
-
+            res.json(Activ(arr))
+            console.log(Activ, 'you ploblem');
         });
     });
 });
+
+app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+    const orgId = req.params.orgId;
+    console.log(orgId, 'perPersonData');
+    MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+        if (err) throw err;
+        var dbo = db.db('ffc');
+        var query = { "orgId": orgId, "death.date": { "$exists": false } };
+        dbo.collection("person").find(query).toArray((err, arr) => {
+            if (err) throw err;
+            if (!Array.isArray) {
+                Array.isArray = function (arg) {
+                    return Object.prototype.toString.call(arg) === '[object Array]';
+                };
+            }
+            res.json(Activ(arr));
+        });
+    });
+});
+
+app.get('/ncd', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.json(NCD)
+})
 
 app.listen(7000, () => {
     console.log('Application is running on port 7000')
 })
 
-// function Princes(result) {
-//     const data = [
-//         {
-//             0: "MID",
-//             "mid": 0
-//         },
-//         {
-//             1: "OK",
-//             "ok": 0
-//         },
-//         {
-//             2: "VERY_HI",
-//             "veryhi": 0
-//         }
-//     ]
+const NCD = [
+    {
+        "name": "โรคเบาหวาน",
+        "peple": 479
+    },
+    {
+        "name": "โรคหลอดเลือดสมองและหัวใจ",
+        "peple": 300
+    },
+    {
+        "name": "โรคถุงลมโป่งพอง",
+        "peple": 400
+    },
+    {
+        "name": "โรคมะเร็ง",
+        "peple": 100
+    },
+    {
+        "name": "โรคความดันโลหิตสูง",
+        "peple": 100
+    },
+    {
+        "name": "อื่นๆ",
+        "peple": 100
+    }
+]
 
-//     result.forEach((item) => {
-//         if (item.healthAnalyze.result.ACTIVITIES.severity === 'MID') {
-//             data['0'].mid += 1;
-//         }
-//         else if (item.healthAnalyze.result.ACTIVITIES.severity === 'OK') {
-//             data['1'].ok += 1;
-//         }
-//         else if (item.sex === 'VERY_HI') {
-//             data['2'].veryhi += 1;
-//         }
-//     })
-//     var dataArray = [
-//         {
-//             "mid": data['0'].mid
-//         },
-//         {
-//             "ok": data['1'].ok
-//         },
-//         {
-//             "very_hi": data['2'].veryhi
-//         }
-//     ]
-//     return dataArray
-// }
+function Activ(arr) {
+    const data = [
+        {
+            0: "MID",
+            "mid": 0
+        },
+        {
+            1: "OK",
+            "ok": 0
+        },
+        {
+            2: "VERY_HI",
+            "veryhi": 0
+        },
+        {
+            2: "othor",
+            "null": 0
+        }
+    ]
+    arr.forEach((item) => {
+        if (item.healthAnalyze.result !== undefined) {
+            if (item.healthAnalyze.result.ACTIVITIES.severity === 'MID') {
+                data['0'].mid += 1;
+            }
+            else if (item.healthAnalyze.result.ACTIVITIES.severity === 'OK') {
+                data['1'].ok += 1;
+            }
+            else if (item.healthAnalyze.result.ACTIVITIES.severity === 'VERY_HI') {
+                data['2'].veryhi += 1;
+            }
+            else if (item.healthAnalyze.result.ACTIVITIES.severity === 'UNKNOWN') {
+                data['3'].null += 1;
+            }
+        }
+    })
+    var ACTIV = {
+        "MID":data['0'].mid,
+        "OK": data['1'].ok,
+        "VERYHI": data['2'].veryhi,
+        "UNKNOWN":data['3'].null,
+        "byActive":[
+            {
+                "name": "ติดบ้าน",
+                "peple": data['0'].mid
+            },
+            {
+                "name": "ติดสังคม",
+                "peple": data['1'].ok
+            },
+            {
+                "name": "ติดเตียง",
+                "peple": data['2'].veryhi
+            },
+            {
+                "name": "ไม่ระบุ",
+                "peple": data['3'].null
+            }
+        ]
+    }
+   
+    return ACTIV;
+}
 
 function perPersonData(result) {
     const data = [
