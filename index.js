@@ -87,6 +87,7 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
+
         var q = {
             "death.date": { "$exists": false }, $or: [
                 { "healthAnalyze.result.ACTIVITIES.severity": "MID" },
@@ -94,6 +95,31 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
                 { "healthAnalyze.result.ACTIVITIES.severity": "VERY_HI" }
             ]
         }
+
+        var q2 = { "death.date": { "$exists": false }, "healthAnalyze": { "$exists": true }, "healthAnalyze.result.ACTIVITIES.severity": null }
+        var nullCount;
+
+        dbo.collection("person").find(q2).count(function (err, count) {
+            console.log(count, 'ไม่มี result');
+            nullCount = count;
+        })
+
+        var q3 = { "death.date": { "$exists": false }, "healthAnalyze": { "$exists": false } }
+        var nullhealthanalyze;
+
+        dbo.collection("person").find(q3).count(function (err, count) {
+            console.log(count,'ไม่มีhealthanalyze');
+            nullhealthanalyze = count
+        })
+
+        var q4 = { "death.date": { "$exists": false } }
+        var total;
+
+        dbo.collection("person").find(q4).count(function (err, count) {
+            console.log(count,'ข้อมูลทั้งหมด');
+            total = count
+        })
+
         dbo.collection("person").find(q).toArray((err, arr) => {
             if (err) throw err;
             if (!Array.isArray) {
@@ -101,7 +127,7 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
                     return Object.prototype.toString.call(arg) === '[object Array]';
                 };
             }
-            res.json(Activ(arr))
+            res.json(Activ(arr, nullCount, nullhealthanalyze, total))
             console.log(Activ, 'you ploblem');
         });
     });
@@ -114,15 +140,51 @@ app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) =
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
-        var query = { "orgId": orgId, "death.date": { "$exists": false } };
-        dbo.collection("person").find(query).toArray((err, arr) => {
+        var q = {
+            "death.date": { "$exists": false }, $or: [
+                { "healthAnalyze.result.ACTIVITIES.severity": "MID" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "OK" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "VERY_HI" }
+            ],
+            "orgId": orgId
+        }
+
+        var q2 = { "death.date": { "$exists": false }, "healthAnalyze": { "$exists": true }, "healthAnalyze.result.ACTIVITIES.severity": null, "orgId": orgId }
+        var nullCount;
+
+        dbo.collection("person").find(q2).count(function (err, count) {
+            console.log(count, 'ไม่มี result');
+            nullCount = count;
+        })
+
+        var q3 = { "death.date": { "$exists": false }, "healthAnalyze": { "$exists": false },"orgId": orgId }
+        var nullhealthanalyze;
+
+        dbo.collection("person").find(q3).count(function (err, count) {
+            console.log(count,'ไม่มีhealthanalyze');
+            
+            nullhealthanalyze = count
+        })
+
+        var q4 = { "death.date": { "$exists": false },"orgId": orgId }
+        var total;
+
+        dbo.collection("person").find(q4).count(function (err, count) {
+            console.log(count,'ข้อมูลทั้งหมด');
+            
+            total = count
+        })
+
+
+        dbo.collection("person").find(q).toArray((err, arr) => {
             if (err) throw err;
             if (!Array.isArray) {
                 Array.isArray = function (arg) {
                     return Object.prototype.toString.call(arg) === '[object Array]';
                 };
             }
-            res.json(Activ(arr));
+            res.json(Activ(arr, nullCount, nullhealthanalyze, total))
+            console.log(Activ, 'you ploblem');
         });
     });
 });
@@ -163,7 +225,7 @@ const NCD = [
     }
 ]
 
-function Activ(arr) {
+function Activ(arr, nullCount, nullhealthanalyze, total) {
     const data = [
         {
             0: "MID",
@@ -178,11 +240,16 @@ function Activ(arr) {
             "veryhi": 0
         },
         {
-            2: "othor",
-            "null": 0
+            3: "othor",
+            "null": nullCount + nullhealthanalyze
+        },
+        {
+            5: "total",
+            "total": total
         }
     ]
     arr.forEach((item) => {
+
         if (item.healthAnalyze.result !== undefined) {
             if (item.healthAnalyze.result.ACTIVITIES.severity === 'MID') {
                 data['0'].mid += 1;
@@ -193,17 +260,15 @@ function Activ(arr) {
             else if (item.healthAnalyze.result.ACTIVITIES.severity === 'VERY_HI') {
                 data['2'].veryhi += 1;
             }
-            else if (item.healthAnalyze.result.ACTIVITIES.severity === 'UNKNOWN') {
-                data['3'].null += 1;
-            }
         }
     })
     var ACTIV = {
-        "MID":data['0'].mid,
+        "MID": data['0'].mid,
         "OK": data['1'].ok,
         "VERYHI": data['2'].veryhi,
-        "UNKNOWN":data['3'].null,
-        "byActive":[
+        "UNKNOWN": data['3'].null,
+        "total": data['0'].mid + data['1'].ok + data['2'].veryhi + data['3'].null,
+        "byActive": [
             {
                 "name": "ติดบ้าน",
                 "peple": data['0'].mid
@@ -222,7 +287,7 @@ function Activ(arr) {
             }
         ]
     }
-   
+
     return ACTIV;
 }
 
