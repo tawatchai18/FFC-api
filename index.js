@@ -2,7 +2,7 @@ const dbUrl = "mongodb://localhost:27017/ffc";
 const FFC = require('./models/ffc');
 const Pyramid = require('./models/pyramid');
 const Chronics = require('./models/chronic');
-ObjectID = require('mongodb').ObjectID;
+const ObjectID = require('mongodb').ObjectID;
 
 const express = require('express');
 const app = express();
