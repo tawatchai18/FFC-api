@@ -17,7 +17,7 @@ FFC.prototype.collection = {}
  * @param query เช่น {"orgId":"sdfasdfsadfedsf"}
  * @param callback(result) คำสั่งที่จะให้ทำงาน
  */
-FFC.prototype.find = function (query, callback) {
+FFC.prototype.findToArray = function (query, callback) {
     MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         if (err) throw err;
         const dbo = db.db(dbName);

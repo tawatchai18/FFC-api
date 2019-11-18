@@ -20,11 +20,11 @@ const corsOptions = {
 // ตารางปิรามิดประชากร
 app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    const personDao = new FFC("person");
+    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = {"death.date": {"$exists": false}};
-    personDao.find(query, (result) => {
-        const prePerson = new Pyramid(result);
-        res.json(prePerson.perPersonData());
+    personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+        const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
+        res.json(prePerson.perPersonData()); // เรียกใช้งาน
     });
 });
 
@@ -32,49 +32,33 @@ app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
 app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-        if (err) throw err;
-        var dbo = db.db(dbName);
-        var query = {"orgId": orgId, "death.date": {"$exists": false}};
-        dbo.collection("person").find(query).toArray((err, result) => {
-            if (err) throw err;
-            if (!Array.isArray) {
-                Array.isArray = function (arg) {
-                    return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-            }
-            res.json(perPersonData(result));
-        });
+
+    const personDao = new FFC("person");
+    const query = {"orgId": orgId, "death.date": {"$exists": false}};
+
+    personDao.findToArray(query, (result) => {
+        const prePerson = new Pyramid(result);
+        res.json(prePerson.perPersonData());
     });
 });
 
 // ชื่อหน่วยงาน
 app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-        if (err) throw err;
-        // var data;
-        var dbo = db.db(dbName);
-        var query = {};
-        var data = []
-        dbo.collection("organ").find(query).toArray((err, result) => {
-            if (err) throw err;
-            if (!Array.isArray) {
-                Array.isArray = function (arg) {
-                    return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-            }
-            result.forEach((item) => {
-                data.push({
-                    name: item.displayName,
-                    label: item.displayName,
-                    id: item.id,
-                })
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+    const orgDao = new FFC("organ")
+
+    orgDao.findToArray({}, (result) => {
+        var data = [];
+        result.forEach((item) => {
+            data.push({
+                name: item.displayName,
+                label: item.displayName,
+                id: item.id,
             })
-            res.json(data);
-            console.log(data, '======');
         });
+        res.json(data);
+        console.log(data, '======');
     });
 });
 
