@@ -18,7 +18,7 @@ const corsOptions = {
 app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = {"death.date": {"$exists": false}};
+    const query = { "death.date": { "$exists": false } };
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(prePerson.perPersonData()); // เรียกใช้งาน
@@ -31,7 +31,7 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
-    const query = {"orgId": orgId, "death.date": {"$exists": false}};
+    const query = { "orgId": orgId, "death.date": { "$exists": false } };
     personDao.findToArray(query, (result) => {
         const prePerson = new Pyramid(result);
         res.json(prePerson.perPersonData());
@@ -60,12 +60,12 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 
 // อัตราส่วนผู้สูงอายุ
 app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
         var haveActivitiesQuery = {
-            "death.date": {"$exists": false}, "healthAnalyze.result.ACTIVITIES": {"$exists": true}
+            "death.date": { "$exists": false }, "healthAnalyze.result.ACTIVITIES": { "$exists": true }
         };
         dbo.collection("person").find(haveActivitiesQuery).toArray((err, arr) => {
             if (err) throw err;
@@ -82,15 +82,15 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
 app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, { useNewUrlParser: true }, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
         var q = {
-            "death.date": {"$exists": false}, $or: [
-                {"healthAnalyze.result.ACTIVITIES.severity": "MID"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "OK"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "VERY_HI"}
+            "death.date": { "$exists": false }, $or: [
+                { "healthAnalyze.result.ACTIVITIES.severity": "MID" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "OK" },
+                { "healthAnalyze.result.ACTIVITIES.severity": "VERY_HI" }
             ],
             "orgId": orgId
         }
@@ -105,7 +105,6 @@ app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) =
         });
     });
 });
-
 
 app.listen(7000, () => {
     console.log('Application is running on port 7000')
