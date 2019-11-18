@@ -1,9 +1,13 @@
-const express = require('express');
+const dbUrl = "mongodb://localhost:27017/ffc";
+const dbName = "ffc";
+
+FFC = require('./models/ffc');
 Pyramid = require('./models/pyramid');
+
+const express = require('express');
 const app = express();
 var apicache = require('apicache');
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/ffc";
 let cache = apicache.middleware;
 
 // const ObjectId = require('mongodb').ObjectId;
@@ -11,25 +15,16 @@ const cors = require('cors');
 const corsOptions = {
     origin: 'http://localhost:7000',
     optionsSuccessStatus: 200
-}
+};
 
 // ตารางปิรามิดประชากร
 app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(url, {useNewUrlParser: true}, (err, db) => {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-        if (err) throw err;
-        var dbo = db.db('ffc');
-        var query = {"death.date": {"$exists": false}};
-        dbo.collection("person").find(query).toArray((err, result) => {
-            if (err) throw err;
-            if (!Array.isArray) {
-                Array.isArray = function (arg) {
-                    return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-            }
-            const prePerson = new Pyramid(result);
-            res.json(prePerson.perPersonData());
-        });
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    const personDao = new FFC("person");
+    const query = {"death.date": {"$exists": false}};
+    personDao.find(query, (result) => {
+        const prePerson = new Pyramid(result);
+        res.json(prePerson.perPersonData());
     });
 });
 
@@ -37,10 +32,10 @@ app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
 app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
-    MongoClient.connect(url, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
-        var dbo = db.db('ffc');
+        var dbo = db.db(dbName);
         var query = {"orgId": orgId, "death.date": {"$exists": false}};
         dbo.collection("person").find(query).toArray((err, result) => {
             if (err) throw err;
@@ -56,11 +51,11 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
 
 // ชื่อหน่วยงาน
 app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(url, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         // var data;
-        var dbo = db.db('ffc');
+        var dbo = db.db(dbName);
         var query = {};
         var data = []
         dbo.collection("organ").find(query).toArray((err, result) => {
@@ -85,7 +80,7 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 
 // อัตราส่วนผู้สูงอายุ
 app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(url, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
@@ -141,7 +136,7 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
 app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
-    MongoClient.connect(url, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
