@@ -56,7 +56,7 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
-    const query = {"orgId": orgId, "death.date": {"$exists": false}};
+    const query = {"orgIndex": ObjectID(orgId), "death.date": {"$exists": false}};
     personDao.findToArray(query, (result) => {
         const prePerson = new Pyramid(result);
         res.json(prePerson.perPersonData());
@@ -67,7 +67,7 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
 app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
-    const orgDao = new FFC("organ")
+    const orgDao = new FFC("organ");
 
     orgDao.findToArray({}, (result) => {
         var data = [];
@@ -117,8 +117,8 @@ app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) =
                 {"healthAnalyze.result.ACTIVITIES.severity": "OK"},
                 {"healthAnalyze.result.ACTIVITIES.severity": "VERY_HI"}
             ],
-            "orgId": orgId
-        }
+            "orgIndex": ObjectID(orgId)
+        };
         dbo.collection("person").find(q).toArray((err, arr) => {
             if (err) throw err;
             if (!Array.isArray) {
