@@ -1,4 +1,4 @@
-Chronics = function (persons) {
+const Chronics = function (persons) {
     this.persons = persons;
 };
 
