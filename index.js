@@ -64,48 +64,48 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 
 // อัตราส่วนผู้สูงอายุ
 app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
+
     MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
         res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
         if (err) throw err;
         var dbo = db.db('ffc');
 
-        var q = {
-            "death.date": {"$exists": false}, $or: [
-                {"healthAnalyze.result.ACTIVITIES.severity": "MID"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "OK"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "VERY_HI"}
-            ]
+        var haveActivitiesQuery = {
+            "death.date": {"$exists": false}, "healthAnalyze.result.ACTIVITIES": {"$exists": true}
         };
 
-        var q2 = {
+        var noResultQuery = {
             "death.date": {"$exists": false},
             "healthAnalyze": {"$exists": true},
             "healthAnalyze.result.ACTIVITIES.severity": null
         };
         var nullCount;
 
-        dbo.collection("person").find(q2).count(function (err, count) {
+        dbo.collection("person").find(noResultQuery).count(function (err, count) {
             console.log(count, 'ไม่มี result');
             nullCount = count;
         });
 
-        var q3 = {"death.date": {"$exists": false}, "healthAnalyze": {"$exists": false}}
+        var noHealthAnalyzeQuery = {
+            "death.date": {"$exists": false},
+            "healthAnalyze.result.ACTIVITIES": {"$exists": false}
+        };
         var nullhealthanalyze;
 
-        dbo.collection("person").find(q3).count(function (err, count) {
+        dbo.collection("person").find(noHealthAnalyzeQuery).count(function (err, count) {
             console.log(count, 'ไม่มีhealthanalyze');
             nullhealthanalyze = count
         });
 
-        var q4 = {"death.date": {"$exists": false}}
+        var noDeathQuery = {"death.date": {"$exists": false}}
         var total;
 
-        dbo.collection("person").find(q4).count(function (err, count) {
+        dbo.collection("person").find(noDeathQuery).count(function (err, count) {
             console.log(count, 'ข้อมูลทั้งหมด');
             total = count
         });
 
-        dbo.collection("person").find(q).toArray((err, arr) => {
+        dbo.collection("person").find(haveActivitiesQuery).toArray((err, arr) => {
             if (err) throw err;
             if (!Array.isArray) {
                 Array.isArray = function (arg) {
@@ -212,7 +212,7 @@ const NCD = [
         "name": "อื่นๆ",
         "peple": 100
     }
-]
+];
 
 function Activ(arr, nullCount, nullhealthanalyze, total) {
     const data = [
@@ -232,9 +232,9 @@ function Activ(arr, nullCount, nullhealthanalyze, total) {
             3: "othor",
             "null": 0
         }
-    ]
+    ];
     var moment = require('moment');
-    let Else = 0
+    let Else = 0;
     console.log(Else, 'มากกว่า 60');
     arr.forEach((item) => {
         // console.log(item.birthDate,'birthDate');
@@ -253,7 +253,8 @@ function Activ(arr, nullCount, nullhealthanalyze, total) {
                 data['3'].null += 1
             }
         }
-    })
+    });
+
     var ACTIV = {
         "MID": data['0'].mid,
         "OK": data['1'].ok,
@@ -278,7 +279,7 @@ function Activ(arr, nullCount, nullhealthanalyze, total) {
                 "peple": data['3'].null
             }
         ]
-    }
+    };
 
     return ACTIV;
 }
