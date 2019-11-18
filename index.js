@@ -1,6 +1,7 @@
 const dbUrl = "mongodb://localhost:27017/ffc";
 const FFC = require('./models/ffc');
 const Pyramid = require('./models/pyramid');
+const Chronics = require('./models/chronic');
 const express = require('express');
 const app = express();
 var apicache = require('apicache');
@@ -22,6 +23,17 @@ app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(prePerson.perPersonData()); // เรียกใช้งาน
+    });
+});
+
+// chronic
+app.get('/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const query = {"chronics.disease.icd10": {"$exists": true}};
+    personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+        const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
+        res.json(chronics.topChronic(5)); // เรียกใช้งาน
     });
 });
 
