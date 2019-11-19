@@ -3,12 +3,12 @@ const Pyramid = require('./models/pyramid');
 const Chronics = require('./models/chronic');
 const ObjectID = require('mongodb').ObjectID;
 
-const rootPart = "/report"
+const rootPart = "/report";
 
 const express = require('express');
 const app = express();
-var apicache = require('apicache');
-let cache = apicache.middleware;
+const apicache = require('apicache');
+const cache = apicache.middleware;
 
 // const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
