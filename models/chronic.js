@@ -31,7 +31,7 @@ Chronics.prototype.topChronic = function (top) {
     };
 
     listCount.sort((a, b) => b.sum - a.sum).forEach((value, index) => {
-        if (index) {
+        if (index < top && top > 0) {
             output.byIcd10.push(
                 {
                     name: nameIcd10[value.name],
