@@ -1,6 +1,11 @@
-const MongoClient = require('mongodb').MongoClient;
+/**
+ * ถ้าไม่ได้กำหนดค่า MONGODB_URI จะดึงค่าจาก dbUrl
+ * @type {string}
+ */
 const dbUrl = "mongodb://localhost:27017/ffc";
+const MongoClient = require('mongodb').MongoClient;
 const dbName = "ffc";
+const process = require('process');
 
 /**
  * สร้าง query เชื่อมไปยัง ffc
@@ -10,7 +15,7 @@ const FFC = function (collection) {
     this.collectionName = collection
 };
 
-FFC.prototype.collectionName = {}
+FFC.prototype.collectionName = {};
 
 /**
  * ทำการ query
@@ -33,11 +38,19 @@ FFC.prototype.findToArray = function (query, callback) {
  * @param callback
  */
 FFC.prototype.collection = function (callback) {
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
+    MongoClient.connect(getMongoUrl(), {useNewUrlParser: true}, (err, db) => {
         if (err) throw err;
         const dbo = db.db(dbName);
         callback(dbo.collection(this.collectionName))
     });
 };
+
+function getMongoUrl() {
+    const env = process.env.MONGODB_URI;
+    if (env !== undefined)
+        return env;
+    else
+        return dbUrl;
+}
 
 module.exports = FFC;
