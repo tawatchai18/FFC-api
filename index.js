@@ -136,7 +136,7 @@ function Activ(arr) {
         }
     ];
     var moment = require('moment');
-    let Else = 0;
+    var Else = 0;
     console.log(Else, 'มากกว่า 60');
     arr.forEach((item) => {
         if (item.healthAnalyze.result !== undefined) {
