@@ -49,7 +49,7 @@ Chronics.prototype.topChronic = function (top) {
         if (index < top || top < 0) {
             output.byIcd10.push(
                 {
-                    name: nameIcd10[value.name],
+                    name: nameIcd10[value.name] + " (" + value.name + ")",
                     y: value.sum
                 }
             )
