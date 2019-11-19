@@ -3,6 +3,8 @@ const Pyramid = require('./models/pyramid');
 const Chronics = require('./models/chronic');
 const ObjectID = require('mongodb').ObjectID;
 
+const rootPart = "/report"
+
 const express = require('express');
 const app = express();
 var apicache = require('apicache');
@@ -16,7 +18,7 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = {"death.date": {"$exists": false}};
@@ -27,7 +29,7 @@ app.get('/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // chronic
-app.get('/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = {"chronics.disease.icd10": {"$exists": true}};
@@ -37,7 +39,7 @@ app.get('/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
     });
 });
 
-app.get('/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const orgId = req.params.orgId;
@@ -49,7 +51,7 @@ app.get('/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // idorg
-app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
@@ -62,7 +64,7 @@ app.get('/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // ชื่อหน่วยงาน
-app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 
     const orgDao = new FFC("organ");
@@ -82,7 +84,7 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 });
 
 // อัตราส่วนผู้สูงอายุ
-app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person");
     const haveActivitiesQuery = {
@@ -94,7 +96,7 @@ app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
     });
 });
 
-app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
