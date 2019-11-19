@@ -12,14 +12,25 @@ const cache = apicache.middleware;
 
 // const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
+const whitelist = [
+    'https://report.ffc.in.th',
+    'http://localhost:3000'];
+
 const corsOptions = {
-    origin: 'http://localhost:7000',
-    optionsSuccessStatus: 200
+    origin: function (origin, callback) {
+        console.log(origin, " Origin");
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            // callback(new Error('Not allowed by CORS')); // ใช้จริงจะเอา comment ออก
+            callback(null, true);
+        }
+    },
+    credentials: true
 };
 
 // ตารางปิรามิดประชากร
 app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = {"death.date": {"$exists": false}};
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
@@ -30,7 +41,6 @@ app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) 
 
 // chronic
 app.get(rootPart + '/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = {
         "chronics.disease.icd10": {"$exists": true},
@@ -43,7 +53,6 @@ app.get(rootPart + '/chronic', cors(corsOptions), cache('12 hour'), (req, res) 
 });
 
 app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const orgId = req.params.orgId;
     const query = {
@@ -59,7 +68,6 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req
 
 // idorg
 app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
@@ -72,8 +80,6 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req
 
 // ชื่อหน่วยงาน
 app.get(rootPart + '/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-
     const orgDao = new FFC("organ");
 
     orgDao.findToArray({}, (result) => {
@@ -92,7 +98,6 @@ app.get(rootPart + '/convert', cors(corsOptions), cache('12 hour'), (req, res) 
 
 // อัตราส่วนผู้สูงอายุ
 app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person");
     const haveActivitiesQuery = {
         "death.date": {"$exists": false},
@@ -104,7 +109,6 @@ app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('12 hour'), (req, re
 });
 
 app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
 
