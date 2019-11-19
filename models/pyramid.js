@@ -75,9 +75,9 @@ Pyramid.prototype.perPersonData = function () {
     ];
 
     var moment = require('moment');
-    let countElse = 0;
-    let total = 0;
-    let date = new Date();
+    var countElse = 0;
+    var total = 0;
+    var date = new Date();
     this.result.forEach((item) => {
         total++
 
@@ -163,8 +163,8 @@ Pyramid.prototype.perPersonData = function () {
             countElse++
         }
     });
-    let totalmale = 0;
-    let totalfemale = 0;
+    var totalmale = 0;
+    var totalfemale = 0;
     data.forEach((item) => {
         totalmale += item.male;
         totalfemale += item.female
