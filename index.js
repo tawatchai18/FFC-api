@@ -32,7 +32,10 @@ app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) 
 app.get(rootPart + '/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = {"chronics.disease.icd10": {"$exists": true}};
+    const query = {
+        "chronics.disease.icd10": {"$exists": true},
+        "death.date": {"$exists": false}
+    };
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(chronics.topChronic(-1)); // เรียกใช้งาน
@@ -43,7 +46,11 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const orgId = req.params.orgId;
-    const query = {"orgIndex": ObjectID(orgId), "chronics.disease.icd10": {"$exists": true}};
+    const query = {
+        "orgIndex": ObjectID(orgId),
+        "chronics.disease.icd10": {"$exists": true},
+        "death.date": {"$exists": false}
+    };
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(chronics.topChronic(-1)); // เรียกใช้งาน
