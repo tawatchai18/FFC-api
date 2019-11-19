@@ -35,7 +35,7 @@ app.get('/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
     const query = {"chronics.disease.icd10": {"$exists": true}};
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronics.topChronic(5)); // เรียกใช้งาน
+        res.json(chronics.topChronic(-1)); // เรียกใช้งาน
     });
 });
 
@@ -46,7 +46,7 @@ app.get('/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
     const query = {"orgIndex": ObjectID(orgId), "chronics.disease.icd10": {"$exists": true}};
     personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronics.topChronic(5)); // เรียกใช้งาน
+        res.json(chronics.topChronic(-1)); // เรียกใช้งาน
     });
 });
 
