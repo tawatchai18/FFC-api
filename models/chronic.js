@@ -11,13 +11,13 @@ Chronics.prototype.persons = {};
  * @returns {{other: number, total: number, byIcd10: []}}
  */
 Chronics.prototype.topChronic = function (top) {
-    let personCount = [];
-    let nameIcd10 = [];
+    var personCount = [];
+    var nameIcd10 = [];
     this.persons.forEach((person) => {
 
-        let groupChronicByIcd10 = [];
+        var groupChronicByIcd10 = [];
         person.chronics.forEach((chronic) => { // group by icd10
-            let find = groupChronicByIcd10.find(value => value.disease.icd10 === chronic.disease.icd10);
+            var find = groupChronicByIcd10.find(value => value.disease.icd10 === chronic.disease.icd10);
             if (find === undefined) {
                 groupChronicByIcd10.push(chronic)
             }
@@ -25,7 +25,7 @@ Chronics.prototype.topChronic = function (top) {
 
         groupChronicByIcd10.forEach((chronic) => {
             const icd10 = chronic.disease.icd10;
-            let findPersonCount = personCount.find(value => value.name === icd10);
+            var findPersonCount = personCount.find(value => value.name === icd10);
 
             if (findPersonCount === undefined) { // ตรวจสอบว่าใน personCount มีการประกาศโรคไว้หรือยัง
                 findPersonCount = {
