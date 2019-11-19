@@ -4,23 +4,38 @@ const Chronics = function (persons) {
 
 Chronics.prototype.persons = {};
 
+/**
+ * นับจำนวนคนที่เป็นโรคเรื้อรัง โดยคน 1 คนอาจเป็นหลายโรคก็ได้
+ * เช่น เป็นทั้ง เบาหวาน และ ความดัน ผลจะแสดงออกมาว่า เบาหวาน:1 ความดัน:1
+ * @param top หากระบุ -1 คือทั้งหมด, หากระบุจำนวนเต็มเอาเฉพาะอันดับที่มากที่สุด
+ * @returns {{other: number, total: number, byIcd10: []}}
+ */
 Chronics.prototype.topChronic = function (top) {
-    let listCount = [];
+    let personCount = [];
     let nameIcd10 = [];
     this.persons.forEach((person) => {
-        person.chronics.forEach((chronic) => {
-            const icd10 = chronic.disease.icd10;
-            var find = listCount.find(value => value.name === icd10);
 
+        let groupChronicByIcd10 = [];
+        person.chronics.forEach((chronic) => { // group by icd10
+            let find = groupChronicByIcd10.find(value => value.disease.icd10 === chronic.disease.icd10);
             if (find === undefined) {
-                find = {
+                groupChronicByIcd10.push(chronic)
+            }
+        });
+
+        groupChronicByIcd10.forEach((chronic) => {
+            const icd10 = chronic.disease.icd10;
+            let findPersonCount = personCount.find(value => value.name === icd10);
+
+            if (findPersonCount === undefined) { // ตรวจสอบว่าใน personCount มีการประกาศโรคไว้หรือยัง
+                findPersonCount = {
                     name: icd10,
                     sum: 0
                 };
-                listCount.push(find);
+                personCount.push(findPersonCount);
                 nameIcd10[icd10] = chronic.disease.translation.th;
             }
-            find.sum++;
+            findPersonCount.sum++;
         })
     });
 
@@ -30,8 +45,8 @@ Chronics.prototype.topChronic = function (top) {
         byIcd10: []
     };
 
-    listCount.sort((a, b) => b.sum - a.sum).forEach((value, index) => {
-        if (index < top && top > 0) {
+    personCount.sort((a, b) => b.sum - a.sum).forEach((value, index) => {
+        if (index < top || top < 0) {
             output.byIcd10.push(
                 {
                     name: nameIcd10[value.name],
