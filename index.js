@@ -1,4 +1,3 @@
-const dbUrl = "mongodb://localhost:27017/ffc";
 const FFC = require('./models/ffc');
 const Pyramid = require('./models/pyramid');
 const Chronics = require('./models/chronic');
@@ -7,7 +6,6 @@ const ObjectID = require('mongodb').ObjectID;
 const express = require('express');
 const app = express();
 var apicache = require('apicache');
-var MongoClient = require('mongodb').MongoClient;
 let cache = apicache.middleware;
 
 // const ObjectId = require('mongodb').ObjectId;
@@ -85,55 +83,36 @@ app.get('/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
 
 // อัตราส่วนผู้สูงอายุ
 app.get('/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-        if (err) throw err;
-        var dbo = db.db('ffc');
-        var haveActivitiesQuery = {
-            "death.date": {"$exists": false}, "healthAnalyze.result.ACTIVITIES": {"$exists": true}
-        };
-        dbo.collection("person").find(haveActivitiesQuery).toArray((err, arr) => {
-            if (err) throw err;
-            if (!Array.isArray) {
-                Array.isArray = function (arg) {
-                    return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-            }
-            res.json(Activ(arr))
-        });
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    const personDao = new FFC("person");
+    const haveActivitiesQuery = {
+        "death.date": {"$exists": false},
+        "healthAnalyze.result.ACTIVITIES": {"$exists": true}
+    };
+    personDao.findToArray(haveActivitiesQuery, (arr) => {
+        res.json(Activ(arr));
     });
 });
 
 app.get('/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
-    MongoClient.connect(dbUrl, {useNewUrlParser: true}, (err, db) => {
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-        if (err) throw err;
-        var dbo = db.db('ffc');
-        var q = {
-            "death.date": {"$exists": false}, $or: [
-                {"healthAnalyze.result.ACTIVITIES.severity": "MID"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "OK"},
-                {"healthAnalyze.result.ACTIVITIES.severity": "VERY_HI"}
-            ],
-            "orgIndex": ObjectID(orgId)
-        };
-        dbo.collection("person").find(q).toArray((err, arr) => {
-            if (err) throw err;
-            if (!Array.isArray) {
-                Array.isArray = function (arg) {
-                    return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-            }
-            res.json(Activ(arr))
-        });
+
+    const personDao = new FFC("person");
+    const haveActivitiesQuery = {
+        "death.date": {"$exists": false},
+        "healthAnalyze.result.ACTIVITIES": {"$exists": true},
+        "orgIndex": ObjectID(orgId)
+    };
+    personDao.findToArray(haveActivitiesQuery, (arr) => {
+        res.json(Activ(arr));
     });
 });
 
 app.listen(7000, () => {
     console.log('Application is running on port 7000')
-})
+});
 
 function Activ(arr) {
     const data = [
