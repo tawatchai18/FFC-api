@@ -154,19 +154,31 @@ app.get(rootPart + '/convert', cors(corsOptions), cache('12 hour'), (req, res) 
             })
         });
         res.json(data);
-        console.log(data, '======');
+        // console.log(data, '======');
     });
 });
 
 // อัตราส่วนผู้สูงอายุ
 app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('12 hour'), (req, res) => {
     const personDao = new FFC("person");
-    const haveActivitiesQuery = {
-        "death.date": {"$exists": false},
-        "healthAnalyze.result.ACTIVITIES": {"$exists": true}
-    };
-    personDao.findToArray(haveActivitiesQuery, (arr) => {
-        res.json(Activ(arr));
+    const haveActivitiesQuery = [
+        {
+            "$match": {
+                "$and": [
+                    {"death.date": {"$exists": false}},
+                    {"healthAnalyze.result.ACTIVITIES": {"$exists": true}}
+                ]
+            }
+        },
+        {
+            "$project": {
+                "birthDate": 1,
+                "healthAnalyze": 1
+            }
+        }
+    ];
+    personDao.aggregateToArray(haveActivitiesQuery, (arr) => {
+        res.json(Activity(arr));
     });
 });
 
@@ -175,13 +187,25 @@ app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (
     console.log(orgId, 'perPersonData');
 
     const personDao = new FFC("person");
-    const haveActivitiesQuery = {
-        "death.date": {"$exists": false},
-        "healthAnalyze.result.ACTIVITIES": {"$exists": true},
-        "orgIndex": ObjectID(orgId)
-    };
-    personDao.findToArray(haveActivitiesQuery, (arr) => {
-        res.json(Activ(arr));
+    const haveActivitiesQuery = [
+        {
+            "$match": {
+                "$and": [
+                    {"death.date": {"$exists": false}},
+                    {"healthAnalyze.result.ACTIVITIES": {"$exists": true}},
+                    {"orgIndex": ObjectID(orgId)}
+                ]
+            }
+        },
+        {
+            "$project": {
+                "birthDate": 1,
+                "healthAnalyze": 1
+            }
+        }
+    ];
+    personDao.aggregateToArray(haveActivitiesQuery, (arr) => {
+        res.json(Activity(arr));
     });
 });
 
@@ -189,7 +213,7 @@ app.listen(7000, () => {
     console.log('Application is running on port 7000')
 });
 
-function Activ(arr) {
+function Activity(arr) {
     const data = [
         {
             0: "MID",
