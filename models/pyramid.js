@@ -2,9 +2,16 @@ const Pyramid = function (result) {
     this.result = result;
 };
 
+var cacheData = [];
+
 Pyramid.prototype.result = {};
 
 Pyramid.prototype.perPersonData = function () {
+
+    if (cacheData.length > 0) {
+        return cacheData
+    }
+
     const data = [
         {
             0: "1-10",
@@ -74,12 +81,12 @@ Pyramid.prototype.perPersonData = function () {
         }
     ];
 
-    var moment = require('moment');
+    const moment = require('moment');
     var countElse = 0;
     var total = 0;
     var date = new Date();
     this.result.forEach((item) => {
-        total++
+        total++;
 
         var years = moment().diff(item.birthDate, 'years', false);
         if (years >= 0 && years <= 10) {
@@ -254,6 +261,7 @@ Pyramid.prototype.perPersonData = function () {
     //ไม่ระบุเพศ
     console.log(countElse, " Count else");
 
+    cacheData = dataArray;
     return dataArray;
 };
 
