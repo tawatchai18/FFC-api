@@ -34,16 +34,20 @@ app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) 
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = [
         {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
+            "$match": {
+                "$and": [
+                    {
+                        "death.date": {
+                            "$exists": false
+                        }
+                    }
+                ]
             }
         },
         {
-            "$match": {
-                "death.date": {
-                    "$exists": false
-                }
+            "$project": {
+                "birthDate": 1,
+                "sex": 1
             }
         }
     ];
@@ -88,12 +92,6 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req
 
     const query = [
         {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
-            }
-        },
-        {
             "$match": {
                 "$and": [
                     {
@@ -105,6 +103,12 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req
                         "orgIndex": ObjectID(orgId)
                     }
                 ]
+            }
+        },
+        {
+            "$project": {
+                "birthDate": 1,
+                "sex": 1
             }
         }
     ];
