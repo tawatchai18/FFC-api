@@ -2,16 +2,27 @@ const Pyramid = function (result) {
     this.result = result;
 };
 
+const cacheExpire = 12 * 60 * 60 * 1000;
+
 var cacheData = [];
+var cacheDate = new Date();
 
 Pyramid.prototype.result = {};
 
+function checkExpireCache(cacheDate) {
+    var now = new Date();
+    var diffTime = now.getTime() - cacheDate.getTime();
+    return diffTime < cacheExpire;
+}
+
 Pyramid.prototype.perPersonData = function () {
 
-    if (cacheData.length > 0) {
+    if (cacheData.length > 0 && checkExpireCache(cacheDate)) {
+        console.log("use cache");
         return cacheData
     }
 
+    console.log("create new date");
     const data = [
         {
             0: "1-10",
@@ -253,15 +264,16 @@ Pyramid.prototype.perPersonData = function () {
             }
         ]
     };
-    console.log(this.result.length, 'Length result');
+    /*console.log(this.result.length, 'Length result');
     console.log(total, 'Count result');
     console.log(totalmale, "ชาย", totalfemale, "ผู้หญิง");
     console.log(totalmale + totalfemale, "ชายบวกหญิง");
     console.log(totalmale + totalfemale + countElse, "บวกทั้งหมด");
     //ไม่ระบุเพศ
-    console.log(countElse, " Count else");
+    console.log(countElse, " Count else");*/
 
     cacheData = dataArray;
+    cacheDate = new Date()
     return dataArray;
 };
 
