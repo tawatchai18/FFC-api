@@ -1,6 +1,7 @@
 const FFC = require('./models/ffc');
 const Pyramid = require('./models/pyramid');
 const Chronics = require('./models/chronic');
+const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
 
 const rootPart = "/report";
@@ -177,8 +178,9 @@ app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('12 hour'), (req, re
             }
         }
     ];
-    personDao.aggregateToArray(haveActivitiesQuery, (arr) => {
-        res.json(Activity(arr));
+    personDao.aggregateToArray(haveActivitiesQuery, (persons) => {
+        const activity = new Activity(persons);
+        res.json(activity.activity());
     });
 });
 
@@ -204,8 +206,9 @@ app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('12 hour'), (
             }
         }
     ];
-    personDao.aggregateToArray(haveActivitiesQuery, (arr) => {
-        res.json(Activity(arr));
+    personDao.aggregateToArray(haveActivitiesQuery, (persons) => {
+        const activity = new Activity(persons);
+        res.json(activity.activity());
     });
 });
 
@@ -213,70 +216,3 @@ app.listen(7000, () => {
     console.log('Application is running on port 7000')
 });
 
-function Activity(arr) {
-    const data = [
-        {
-            0: "MID",
-            "mid": 0
-        },
-        {
-            1: "OK",
-            "ok": 0
-        },
-        {
-            2: "VERY_HI",
-            "veryhi": 0
-        },
-        {
-            3: "othor",
-            "null": 0
-        }
-    ];
-    var moment = require('moment');
-    var Else = 0;
-    console.log(Else, 'มากกว่า 60');
-    arr.forEach((item) => {
-        if (item.healthAnalyze.result !== undefined) {
-            var years = moment().diff(item.birthDate, 'years', false);
-            if (years >= 60) {
-                if (item.healthAnalyze.result.ACTIVITIES.severity === 'MID') {
-                    data['0'].mid += 1;
-                } else if (item.healthAnalyze.result.ACTIVITIES.severity === 'OK') {
-                    data['1'].ok += 1;
-                } else if (item.healthAnalyze.result.ACTIVITIES.severity === 'VERY_HI') {
-                    data['2'].veryhi += 1;
-                }
-            } else {
-                data['3'].null += 1
-            }
-        }
-    });
-
-    var ACTIV = {
-        "MID": data['0'].mid,
-        "OK": data['1'].ok,
-        "VERYHI": data['2'].veryhi,
-        "UNKNOWN": data['3'].null,
-        "total": data['0'].mid + data['1'].ok + data['2'].veryhi + data['3'].null,
-        "byActive": [
-            {
-                "name": "ติดสังคม",
-                "peple": data['1'].ok
-            },
-            {
-                "name": "ติดบ้าน",
-                "peple": data['0'].mid
-            },
-            {
-                "name": "ติดเตียง",
-                "peple": data['2'].veryhi
-            },
-            {
-                "name": "ไม่ระบุ",
-                "peple": data['3'].null
-            }
-        ]
-    };
-
-    return ACTIV;
-}
