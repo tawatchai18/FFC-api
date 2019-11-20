@@ -142,17 +142,19 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req
 });
 
 // ชื่อหน่วยงาน
+const ignoreOrg = ["5cad8abd698922aa8a93b4e9", "5d8b252b698922acf8ac1897", "5cfdc5d5698922acf89a92e8", "5d1c2679698922acf8a0070c", "5d4ebdba698922acf8a45770", "5d5e7a4b698922acf8a6b72d", "5d801307698922acf8ab37c0", "5d8b2523698922acf8ac17cb", "5d8b2b53698922acf8ac35b7", "5daea3eb698922acf8b6a799", "5c98b5ec698922768b67f336", "5d034a2c698922acf89cffdc", "5d59fc53698922acf8a69769"];
 app.get(rootPart + '/convert', cors(corsOptions), cache('12 hour'), (req, res) => {
     const orgDao = new FFC("organ");
 
     orgDao.findToArray({}, (result) => {
-        var data = [];
-        result.forEach((item) => {
-            data.push({
+        const data = result.filter((item) => {
+            return ignoreOrg.indexOf(item.id) < 0;
+        }).map((item) => {
+            return {
                 name: item.displayName,
                 label: item.displayName,
-                id: item.id,
-            })
+                id: item.id
+            }
         });
         res.json(data);
         // console.log(data, '======');
