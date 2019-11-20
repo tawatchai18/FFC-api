@@ -96,91 +96,93 @@ Pyramid.prototype.perPersonData = function () {
     var countElse = 0;
     var total = 0;
     var date = new Date();
+    const monentFun = moment();
     this.result.forEach((item) => {
         total++;
+        var years = monentFun.diff(item.birthDate, 'years', false);
 
-        var years = moment().diff(item.birthDate, 'years', false);
-        if (years >= 0 && years <= 10) {
-            if (item.sex === 'MALE') {
-                data['0'].male += 1
-            } else {
-                data['0'].female += 1
-            }
-            data['0'].total += 1
-        } else if (years <= 20) {
-            if (item.sex === 'MALE') {
-                data['1'].male += 1;
-            } else {
-                data['1'].female += 1
-            }
-            data['1'].total += 1
-        } else if (years <= 30) {
-            if (item.sex === 'MALE') {
-                data['2'].male += 1;
-            } else {
-                data['2'].female += 1
-            }
-            data['2'].total += 1
-        } else if (years <= 40) {
-            if (item.sex === 'MALE') {
-                data['3'].male += 1;
-            } else {
-                data['3'].female += 1
-            }
-            data['3'].total += 1
-        } else if (years <= 50) {
-            if (item.sex === 'MALE') {
-                data['4'].male += 1;
-            } else {
-                data['4'].female += 1
-            }
-            data['4'].total += 1
-        } else if (years <= 60) {
-            if (item.sex === 'MALE') {
-                data['5'].male += 1;
-            } else {
-                data['5'].female += 1
-            }
-            data['5'].total += 1
-        } else if (years <= 70) {
-            if (item.sex === 'MALE') {
-                data['6'].male += 1;
-            } else {
-                data['6'].female += 1
-            }
-            data['6'].total += 1
-        } else if (years <= 80) {
-            if (item.sex === 'MALE') {
-                data['7'].male += 1;
-            } else {
-                data['7'].female += 1
-            }
-            data['7'].total += 1
-        } else if (years <= 90) {
-            if (item.sex === 'MALE') {
-                data['8'].male += 1;
-            } else {
-                data['8'].female += 1
-            }
-            data['8'].total += 1
-        } else if (years <= 100) {
-            if (item.sex === 'MALE') {
-                data['9'].male += 1;
-            } else {
-                data['9'].female += 1
-            }
-            data['9'].total += 1
-        } else if (years > 100) {
+        if (years > 100)
             if (item.sex === 'MALE') {
                 data['10'].male += 1;
             } else {
                 data['10'].female += 1
             }
-            data['10'].total += 1
-        } else {
-            countElse++
-        }
+        else if (years > 89)
+            if (item.sex === 'MALE') {
+                data['9'].male += 1;
+            } else {
+                data['9'].female += 1
+            }
+        else if (years > 79)
+            if (item.sex === 'MALE') {
+                data['8'].male += 1;
+            } else {
+                data['8'].female += 1
+            }
+        else if (years > 69)
+            if (item.sex === 'MALE') {
+                data['7'].male += 1;
+            } else {
+                data['7'].female += 1
+            }
+        else if (years > 59)
+            if (item.sex === 'MALE') {
+                data['6'].male += 1;
+            } else {
+                data['6'].female += 1
+            }
+        else if (years > 49)
+            if (item.sex === 'MALE') {
+                data['5'].male += 1;
+            } else {
+                data['5'].female += 1
+            }
+        else if (years > 39)
+            if (item.sex === 'MALE') {
+                data['4'].male += 1;
+            } else {
+                data['4'].female += 1
+            }
+        else if (years > 29)
+            if (item.sex === 'MALE') {
+                data['3'].male += 1;
+            } else {
+                data['3'].female += 1
+            }
+        else if (years > 19)
+            if (item.sex === 'MALE') {
+                data['2'].male += 1;
+            } else {
+                data['2'].female += 1
+            }
+        else if (years > 9)
+            if (item.sex === 'MALE') {
+                data['1'].male += 1;
+            } else {
+                data['1'].female += 1
+            }
+        else if (years > 0)
+            if (item.sex === 'MALE') {
+                data['0'].male += 1;
+            } else {
+                data['0'].female += 1
+            }
+        else
+            countElse++;
     });
+
+    data['0'].total = data['0'].male + data['0'].female;
+    data['1'].total = data['1'].male + data['1'].female;
+    data['2'].total = data['2'].male + data['2'].female;
+    data['3'].total = data['3'].male + data['3'].female;
+    data['4'].total = data['4'].male + data['4'].female;
+    data['5'].total = data['5'].male + data['5'].female;
+    data['6'].total = data['6'].male + data['6'].female;
+    data['7'].total = data['7'].male + data['7'].female;
+    data['8'].total = data['8'].male + data['8'].female;
+    data['9'].total = data['9'].male + data['9'].female;
+    data['10'].total = data['10'].male + data['10'].female;
+
     var totalmale = 0;
     var totalfemale = 0;
     data.forEach((item) => {
