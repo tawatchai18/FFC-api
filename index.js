@@ -9,7 +9,6 @@ const express = require('express');
 const app = express();
 const apicache = require('apicache');
 const cache = apicache.middleware;
-
 // const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 const whitelist = [
@@ -60,25 +59,48 @@ app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) 
 // chronic
 app.get(rootPart + '/chronic', cors(corsOptions), cache('12 hour'), (req, res) => {
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = {
-        "chronics.disease.icd10": {"$exists": true},
-        "death.date": {"$exists": false}
-    };
-    personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+    const query = [
+        {
+            "$match": {
+                "$and": [
+                    {"chronics.disease.icd10": {"$exists": true}},
+                    {"death.date": {"$exists": false}}
+                ]
+            }
+        },
+        {
+            "$project": {
+                "chronics": 1,
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(chronics.topChronic(-1)); // เรียกใช้งาน
     });
 });
 
 app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('12 hour'), (req, res) => {
+    console.log(req.originalUrl, "Url");
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const orgId = req.params.orgId;
-    const query = {
-        "orgIndex": ObjectID(orgId),
-        "chronics.disease.icd10": {"$exists": true},
-        "death.date": {"$exists": false}
-    };
-    personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+    const query = [
+        {
+            "$match": {
+                "$and": [
+                    {"chronics.disease.icd10": {"$exists": true}},
+                    {"death.date": {"$exists": false}},
+                    {"orgIndex": ObjectID(orgId)}
+                ]
+            }
+        },
+        {
+            "$project": {
+                "chronics": 1,
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(chronics.topChronic(-1)); // เรียกใช้งาน
     });
