@@ -32,8 +32,22 @@ const corsOptions = {
 // ตารางปิรามิดประชากร
 app.get(rootPart + '/pyramid', cors(corsOptions), cache('12 hour'), (req, res) => {
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = {"death.date": {"$exists": false}};
-    personDao.findToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+    const query = [
+        {
+            "$project": {
+                "birthDate": 1,
+                "sex": 1
+            }
+        },
+        {
+            "$match": {
+                "death.date": {
+                    "$exists": false
+                }
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
         const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
         res.json(prePerson.perPersonData()); // เรียกใช้งาน
     });
@@ -71,8 +85,30 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('12 hour'), (req
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
-    const query = {"orgIndex": ObjectID(orgId), "death.date": {"$exists": false}};
-    personDao.findToArray(query, (result) => {
+
+    const query = [
+        {
+            "$project": {
+                "birthDate": 1,
+                "sex": 1
+            }
+        },
+        {
+            "$match": {
+                "$and": [
+                    {
+                        "death.date": {
+                            "$exists": false
+                        }
+                    },
+                    {
+                        "orgIndex": ObjectID(orgId)
+                    }
+                ]
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => {
         const prePerson = new Pyramid(result);
         res.json(prePerson.perPersonData());
     });
