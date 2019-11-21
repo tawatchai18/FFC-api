@@ -95,61 +95,61 @@ Pyramid.prototype.perPersonData = function () {
                 } else {
                     data['10'].female += 1
                 }
-            else if (years > 89)
+            else if (years >= 90)
                 if (person.sex === 'MALE') {
                     data['9'].male += 1;
                 } else {
                     data['9'].female += 1
                 }
-            else if (years > 79)
+            else if (years >= 80)
                 if (person.sex === 'MALE') {
                     data['8'].male += 1;
                 } else {
                     data['8'].female += 1
                 }
-            else if (years > 69)
+            else if (years >= 70)
                 if (person.sex === 'MALE') {
                     data['7'].male += 1;
                 } else {
                     data['7'].female += 1
                 }
-            else if (years > 59)
+            else if (years >= 60)
                 if (person.sex === 'MALE') {
                     data['6'].male += 1;
                 } else {
                     data['6'].female += 1
                 }
-            else if (years > 49)
+            else if (years >= 50)
                 if (person.sex === 'MALE') {
                     data['5'].male += 1;
                 } else {
                     data['5'].female += 1
                 }
-            else if (years > 39)
+            else if (years >= 40)
                 if (person.sex === 'MALE') {
                     data['4'].male += 1;
                 } else {
                     data['4'].female += 1
                 }
-            else if (years > 29)
+            else if (years >= 30)
                 if (person.sex === 'MALE') {
                     data['3'].male += 1;
                 } else {
                     data['3'].female += 1
                 }
-            else if (years > 19)
+            else if (years >= 20)
                 if (person.sex === 'MALE') {
                     data['2'].male += 1;
                 } else {
                     data['2'].female += 1
                 }
-            else if (years > 9)
+            else if (years >= 10)
                 if (person.sex === 'MALE') {
                     data['1'].male += 1;
                 } else {
                     data['1'].female += 1
                 }
-            else if (years > 0)
+            else if (person.birthDate !== undefined && years >= 0)
                 if (person.sex === 'MALE') {
                     data['0'].male += 1;
                 } else {
