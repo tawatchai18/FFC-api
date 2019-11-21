@@ -60,10 +60,10 @@ Activity.prototype.activity = function () {
                 "name": "ติดเตียง",
                 "peple": data['2'].veryhi
             },
-            {
-                "name": "ไม่ระบุ",
-                "peple": data['3'].null
-            }
+//             {
+//                 "name": "ไม่ระบุ",
+//                 "peple": data['3'].null
+//             }
         ]
     };
 };
