@@ -32,6 +32,16 @@ FFC.prototype.findToArray = function (query, callback) {
     });
 };
 
+FFC.prototype.aggregateToArray = function (query, callback) {
+    this.collection((collection) => {
+        collection.aggregate(query).toArray((err, result) => {
+            if (err) throw err;
+            callback(result)
+        });
+
+    });
+};
+
 /**
  * เปรียบเสมือนการใช้คำสั่ง dbo.collection
  * แต่ในที่นี้จะใส่ชื่อ collection ให้เลย
