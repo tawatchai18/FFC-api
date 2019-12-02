@@ -216,15 +216,7 @@ Pyramid.prototype.perPersonData = function () {
                 "male": data['4'].male,
                 "female": data['4'].female,
                 "total": data['4'].total,
-<<<<<<< HEAD
-<<<<<<< HEAD
-                "age": "41-50 ปี",
-=======
                 "age": "41-50 ปี",
->>>>>>> 10c6f9a3befa3ee293e95a7a501b2b80c2f77bda
-=======
-                "age": "41-50 ปี",
->>>>>>> 233ad45e00f4f8c514dcaaf60144a124bb57ce36
             },
             {
                 "male": data['5'].male,
