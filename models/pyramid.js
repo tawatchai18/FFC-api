@@ -9,61 +9,61 @@ Pyramid.prototype.perPersonData = function () {
     console.log("create new date");
     const data = [
         {
-            0: "1-10",
+            0: "0-9",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            1: "11-20",
+            1: "10-19",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            2: "21-30",
+            2: "20-29",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            3: "31-40",
+            3: "30-39",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            4: "41-50",
+            4: "40-49",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            5: "51-60",
+            5: "50-59",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            6: "61-70",
+            6: "60-69",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            7: "71-80",
+            7: "70-79",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            8: "81-90",
+            8: "80-89",
             "male": 0,
             "female": 0,
             "total": 0
         },
         {
-            9: "91-100",
+            9: "90-99",
             "male": 0,
             "female": 0,
             "total": 0
@@ -89,61 +89,61 @@ Pyramid.prototype.perPersonData = function () {
         if (person.sex === 'UNKNOWN' || person.sex === undefined)
             countNotSex++;
         else {
-            if (years > 100)
+            if (years >= 100)
                 if (person.sex === 'MALE') {
                     data['10'].male += 1;
                 } else {
                     data['10'].female += 1
                 }
-            else if (years >= 90)
+            else if (years > 89)
                 if (person.sex === 'MALE') {
                     data['9'].male += 1;
                 } else {
                     data['9'].female += 1
                 }
-            else if (years >= 80)
+            else if (years > 79)
                 if (person.sex === 'MALE') {
                     data['8'].male += 1;
                 } else {
                     data['8'].female += 1
                 }
-            else if (years >= 70)
+            else if (years > 69)
                 if (person.sex === 'MALE') {
                     data['7'].male += 1;
                 } else {
                     data['7'].female += 1
                 }
-            else if (years >= 60)
+            else if (years > 59)
                 if (person.sex === 'MALE') {
                     data['6'].male += 1;
                 } else {
                     data['6'].female += 1
                 }
-            else if (years >= 50)
+            else if (years > 49)
                 if (person.sex === 'MALE') {
                     data['5'].male += 1;
                 } else {
                     data['5'].female += 1
                 }
-            else if (years >= 40)
+            else if (years > 39)
                 if (person.sex === 'MALE') {
                     data['4'].male += 1;
                 } else {
                     data['4'].female += 1
                 }
-            else if (years >= 30)
+            else if (years > 29)
                 if (person.sex === 'MALE') {
                     data['3'].male += 1;
                 } else {
                     data['3'].female += 1
                 }
-            else if (years >= 20)
+            else if (years > 19)
                 if (person.sex === 'MALE') {
                     data['2'].male += 1;
                 } else {
                     data['2'].female += 1
                 }
-            else if (years >= 10)
+            else if (years > 9)
                 if (person.sex === 'MALE') {
                     data['1'].male += 1;
                 } else {
@@ -192,67 +192,67 @@ Pyramid.prototype.perPersonData = function () {
                 "male": data['0'].male,
                 "female": data['0'].female,
                 "total": data['0'].total,
-                "age": "0-10 ปี",
+                "age": "0-9 ปี",
             },
             {
                 "male": data['1'].male,
                 "female": data['1'].female,
                 "total": data['1'].total,
-                "age": "11-20 ปี",
+                "age": "10-19 ปี",
             },
             {
                 "male": data['2'].male,
                 "female": data['2'].female,
                 "total": data['2'].total,
-                "age": "21-30 ปี",
+                "age": "20-29 ปี",
             },
             {
                 "male": data['3'].male,
                 "female": data['3'].female,
                 "total": data['3'].total,
-                "age": "31-40 ปี",
+                "age": "30-39 ปี",
             },
             {
                 "male": data['4'].male,
                 "female": data['4'].female,
                 "total": data['4'].total,
-                "age": "41-50 ปี",
+                "age": "40-49 ปี",
             },
             {
                 "male": data['5'].male,
                 "female": data['5'].female,
                 "total": data['5'].total,
-                "age": "51-60 ปี",
+                "age": "50-59 ปี",
             },
             {
                 "male": data['6'].male,
                 "female": data['6'].female,
                 "total": data['6'].total,
-                "age": "61-70 ปี",
+                "age": "60-69 ปี",
             },
             {
                 "male": data['7'].male,
                 "female": data['7'].female,
                 "total": data['7'].total,
-                "age": "71-80 ปี",
+                "age": "70-79 ปี",
             },
             {
                 "male": data['8'].male,
                 "female": data['8'].female,
                 "total": data['8'].total,
-                "age": "81-90 ปี",
+                "age": "80-89 ปี",
             },
             {
                 "male": data['9'].male,
                 "female": data['9'].female,
                 "total": data['8'].total,
-                "age": "91-100 ปี",
+                "age": "90-99 ปี",
             },
             {
                 "male": data['10'].male,
                 "female": data['10'].female,
                 "total": data['10'].total,
-                "age": "101 ปีขึ้นไป",
+                "age": "100 ปีขึ้นไป",
             }
         ]
     };
