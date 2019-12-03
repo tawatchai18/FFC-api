@@ -1,10 +1,10 @@
-const Pyramid = function (result) {
+const Pyramid60up = function (result) {
     this.result = result;
 };
 
-Pyramid.prototype.result = {};
+Pyramid60up.prototype.result = {};
 
-Pyramid.prototype.perPersonData = function () {
+Pyramid60up.prototype.pyramidData = function () {
 
     console.log("create new date");
     const data = [
@@ -177,7 +177,6 @@ Pyramid.prototype.perPersonData = function () {
     data.forEach((item) => {
         totalmale += item.male;
         totalfemale += item.female
-        // countData += item.female
     });
 
     var dataArray = {
@@ -187,6 +186,7 @@ Pyramid.prototype.perPersonData = function () {
         "date": date,
         "undefinedSex": countNotSex,
         "undefinedAge": countNotAge,
+        "total60up":  data['6'].total +  data['7'].total +  data['8'].total +  data['9'].total +  data['10'].total,
         "byAge": [
             {
                 "male": data['0'].male,
@@ -256,15 +256,8 @@ Pyramid.prototype.perPersonData = function () {
             }
         ]
     };
-    /*console.log(this.result.length, 'Length result');
-    console.log(total, 'Count result');
-    console.log(totalmale, "ชาย", totalfemale, "ผู้หญิง");
-    console.log(totalmale + totalfemale, "ชายบวกหญิง");
-    console.log(totalmale + totalfemale + countNotAge, "บวกทั้งหมด");
-    //ไม่ระบุเพศ
-    console.log(countNotAge, " Count else");*/
 
     return dataArray;
 };
 
-module.exports = Pyramid;
+module.exports = Pyramid60up;
