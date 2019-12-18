@@ -2,6 +2,7 @@ const FFC = require('./models/ffc');
 const Pyramid = require('./models/pyramid');
 const Pyramid60up = require('./models/pyramid60up');
 const Chronics = require('./models/chronic');
+const Chronicdilldown = require ('./models/chronicdilldown');
 const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
 
@@ -19,7 +20,6 @@ const whitelist = [
 
 const corsOptions = {
     origin: function (origin, callback) {
-        console.log(origin, " Origin");
         if (whitelist.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
@@ -93,8 +93,8 @@ app.get(rootPart + '/chronic', cors(corsOptions), cache('6 hour'), (req, res) =
         {
             "$match": {
                 "$and": [
-                    {"chronics.disease.icd10": {"$exists": true}},
-                    {"death.date": {"$exists": false}}
+                    { "chronics.disease.icd10": { "$exists": true } },
+                    { "death.date": { "$exists": false } }
                 ]
             }
         },
@@ -110,6 +110,55 @@ app.get(rootPart + '/chronic', cors(corsOptions), cache('6 hour'), (req, res) =
     });
 });
 
+app.get(rootPart + '/chronicdilldown', cors(corsOptions), cache('6 hour'), (req, res) => {
+    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const query = [
+        {
+            "$match": {
+                "$and": [
+                    { "chronics.disease.icd10": { "$exists": true } },
+                    { "death.date": { "$exists": false } }
+                ]
+            }
+        },
+        {
+            "$project": {
+                "chronics": 1,
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+        const chronicdilldown = new Chronicdilldown(result); // ตัวตัวเข้าถึง function perPersonData
+        res.json(chronicdilldown.topChronic(-1)); // เรียกใช้งาน
+    });
+});
+
+app.get(rootPart + '/chronicdilldown/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
+    console.log(req.originalUrl, "Url");
+    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const orgId = req.params.orgId;
+    const query = [
+        {
+            "$match": {
+                "$and": [
+                    { "chronics.disease.icd10": { "$exists": true } },
+                    { "death.date": { "$exists": false } },
+                    { "orgIndex": ObjectID(orgId) }
+                ]
+            }
+        },
+        {
+            "$project": {
+                "chronics": 1,
+            }
+        }
+    ];
+    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+        const chronicdilldown = new Chronicdilldown(result); // ตัวตัวเข้าถึง function perPersonData
+        res.json(chronicdilldown.topChronic(-1)); // เรียกใช้งาน
+    });
+});
+
 app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
     console.log(req.originalUrl, "Url");
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
@@ -118,9 +167,9 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req,
         {
             "$match": {
                 "$and": [
-                    {"chronics.disease.icd10": {"$exists": true}},
-                    {"death.date": {"$exists": false}},
-                    {"orgIndex": ObjectID(orgId)}
+                    { "chronics.disease.icd10": { "$exists": true } },
+                    { "death.date": { "$exists": false } },
+                    { "orgIndex": ObjectID(orgId) }
                 ]
             }
         },
@@ -198,9 +247,9 @@ app.get(rootPart + '/pyramid60up/:orgId', cors(corsOptions), cache('6 hour'), (
             }
         }
     ];
-     personDao.aggregateToArray(query, (result) => { 
-        const pyramid60up = new Pyramid60up(result); 
-        res.json(pyramid60up.pyramidData()); 
+    personDao.aggregateToArray(query, (result) => {
+        const pyramid60up = new Pyramid60up(result);
+        res.json(pyramid60up.pyramidData());
     });
 });
 
@@ -231,8 +280,8 @@ app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('6 hour'), (req, res
         {
             "$match": {
                 "$and": [
-                    {"death.date": {"$exists": false}},
-                    {"healthAnalyze.result.ACTIVITIES": {"$exists": true}}
+                    { "death.date": { "$exists": false } },
+                    { "healthAnalyze.result.ACTIVITIES": { "$exists": true } }
                 ]
             }
         },
@@ -258,9 +307,9 @@ app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('6 hour'), (r
         {
             "$match": {
                 "$and": [
-                    {"death.date": {"$exists": false}},
-                    {"healthAnalyze.result.ACTIVITIES": {"$exists": true}},
-                    {"orgIndex": ObjectID(orgId)}
+                    { "death.date": { "$exists": false } },
+                    { "healthAnalyze.result.ACTIVITIES": { "$exists": true } },
+                    { "orgIndex": ObjectID(orgId) }
                 ]
             }
         },
