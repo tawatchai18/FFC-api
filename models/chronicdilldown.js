@@ -45,57 +45,74 @@ Chronicdilldown.prototype.topChronic = function (top) {
     };
     var data = []
     let _ = require('lodash');
-    personCount.forEach((item) => {
-        data.push({
-            name: item.name.substr(0, 3),
-            id: item.name.substr(0, 3),
-            down: [
-                [
-                    nameIcd10[item.name] + " (" + item.name + ")",
-                    item.sum
-                ]
-            ]
-        })
+    personCount.sort((a, b) => b.sum - a.sum).forEach((item, index) => {
+        if (index < top || top < 0) {
+            data.push({
+                name: item.name.substr(0, 3),
+                id: item.name.substr(0, 3),
+                down: [
+                    [
+                        nameIcd10[item.name] + " (" + item.name + ")",
+                        item.sum
+                    ]
+                ],
+                data: [{
+                    name: nameIcd10[item.name] + " (" + item.name + ")",
+                    id: item.sum
+                }]
+            })
+        }
     })
     output.drilldown = _.groupBy(data, function (item) {
         return item.id;
     });
 
     let pp = Object.keys(output["drilldown"])
+    console.log(pp, 'ppoopp');
+
     let outputArr = []
     pp.forEach(function (t) {
         let arr1 = []
+        let arr2 = []
         output.drilldown[t].map((el) => {
             arr1.push(el["down"][0]);
+            arr2.push(el["data"][0]);
         })
-        console.log(arr1, 'oikjuh');
 
         outputArr.push({
             name: String(t),
             id: String(t),
-            down: arr1
+            drilldown: arr1,
+            data: arr2
         })
-    })
+        console.log(arr2, 'ไก่จิกเด็กตายบนปากโอ่ง');
 
+    })
+    // pp.forEach(function (a) {
+    //     let arr2 = []
+    //     output.drilldown[a].map((el) => {
+    //         arr2.push(el["data"][0]);
+    //     })
+    //     console.log(arr2,'lkjhgfd');
+    // })
 
     var data2 = []
-    personCount.forEach((item) => {
-        data2.push({
-            name: nameIcd10[item.name],
-            id: item.name,
-            y: item.sum,
-            map: item.name.substr(0, 3)
-        })
+    personCount.sort((a, b) => b.sum - a.sum).forEach((item, index) => {
+        if (index < top || top < 0) {
+            data2.push({
+                name: nameIcd10[item.name],
+                id: item.name,
+                y: item.sum,
+                map: item.name.substr(0, 3)
+            })
+        }
     })
 
     output.group = _.groupBy(data2, function (item) {
         return item.map;
     });
-    // console.log(output.group, 'GroupGrap');
 
     let dd = Object.keys(output["group"])
-    // console.log(dd, 'poikjhg');
-
     let outputChro = []
     dd.forEach(function (e) {
         let arr2 = []
@@ -104,11 +121,22 @@ Chronicdilldown.prototype.topChronic = function (top) {
             arr2.push(el.y)
         })
         sum = arr2.reduce((result, number) => result + number);
-        outputChro.push({
-            name: String(e),
-            y: sum,
-            drilldown: String(e),
-        })
+        // if (nameIcd10 === undefined ){
+        if (nameIcd10[String(e)] !== undefined)
+            outputChro.sort((a, b) => b.y - a.y).push({
+                name: nameIcd10[String(e)] + " (" + String(e) + ")",
+                // name: String(e),
+                // name: nameIcd10[String(e)],
+                y: sum,
+                drilldown: String(e),
+            })
+        else
+            outputChro.sort((a, b) => b.y - a.y).push({
+                name: String(e),
+                y: sum,
+                drilldown: String(e),
+            })
+        // }
     })
 
     output.drilldown = outputArr
