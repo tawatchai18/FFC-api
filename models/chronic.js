@@ -44,7 +44,7 @@ Chronics.prototype.topChronic = function (top) {
         total: 0,
         byIcd10: []
     };
-
+    
     personCount.sort((a, b) => b.sum - a.sum).forEach((value, index) => {
         if (index < top || top < 0) {
             output.byIcd10.push(

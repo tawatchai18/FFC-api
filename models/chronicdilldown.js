@@ -14,7 +14,6 @@ Chronicdilldown.prototype.topChronic = function (top) {
     var personCount = [];
     var nameIcd10 = [];
     this.persons.forEach((person) => {
-
         var groupChronicByIcd10 = [];
         person.chronics.forEach((chronic) => { // group by icd10
             var find = groupChronicByIcd10.find(value => value.disease.icd10 === chronic.disease.icd10);
@@ -68,7 +67,6 @@ Chronicdilldown.prototype.topChronic = function (top) {
     });
 
     let pp = Object.keys(output["drilldown"])
-    console.log(pp, 'ppoopp');
 
     let outputArr = []
     pp.forEach(function (t) {
@@ -78,23 +76,13 @@ Chronicdilldown.prototype.topChronic = function (top) {
             arr1.push(el["down"][0]);
             arr2.push(el["data"][0]);
         })
-
         outputArr.push({
             name: String(t),
             id: String(t),
             drilldown: arr1,
-            data: arr2
+            data: arr2,
         })
-        console.log(arr2, 'ไก่จิกเด็กตายบนปากโอ่ง');
-
     })
-    // pp.forEach(function (a) {
-    //     let arr2 = []
-    //     output.drilldown[a].map((el) => {
-    //         arr2.push(el["data"][0]);
-    //     })
-    //     console.log(arr2,'lkjhgfd');
-    // })
 
     var data2 = []
     personCount.sort((a, b) => b.sum - a.sum).forEach((item, index) => {
@@ -103,7 +91,7 @@ Chronicdilldown.prototype.topChronic = function (top) {
                 name: nameIcd10[item.name],
                 id: item.name,
                 y: item.sum,
-                map: item.name.substr(0, 3)
+                map: item.name.substr(0, 3),
             })
         }
     })
@@ -114,29 +102,31 @@ Chronicdilldown.prototype.topChronic = function (top) {
 
     let dd = Object.keys(output["group"])
     let outputChro = []
+
     dd.forEach(function (e) {
         let arr2 = []
         let sum = []
+        let arrname = []
         output.group[e].map((el) => {
             arr2.push(el.y)
+            arrname.push(el.name)
         })
+
         sum = arr2.reduce((result, number) => result + number);
-        // if (nameIcd10 === undefined ){
         if (nameIcd10[String(e)] !== undefined)
             outputChro.sort((a, b) => b.y - a.y).push({
                 name: nameIcd10[String(e)] + " (" + String(e) + ")",
-                // name: String(e),
-                // name: nameIcd10[String(e)],
                 y: sum,
                 drilldown: String(e),
             })
         else
             outputChro.sort((a, b) => b.y - a.y).push({
-                name: String(e),
+                // name: String(e),
+                // arrname[0] คือชื่ออันดับแรก
+                name: arrname[0]+ " (" + String(e) + ")",
                 y: sum,
                 drilldown: String(e),
             })
-        // }
     })
 
     output.drilldown = outputArr
