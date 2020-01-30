@@ -5,7 +5,7 @@ const Chronics = require('./models/chronic');
 const Chronicdilldown = require('./models/chronicdilldown');
 const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
-const timeout = require('connect-timeout')
+// const timeout = require('connect-timeout')
 const rootPart = "/report";
 
 const express = require('express');
@@ -31,7 +31,7 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-app.get(rootPart + '/pyramid', cors(corsOptions), timeout('60s'), cache('6 hour'), (req, res) => {
+app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
     const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
     const query = [
         {
@@ -186,7 +186,7 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req,
 });
 
 // idorg
-app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), timeout('60s'), cache('6 hour'), (req, res) => {
+app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
     const orgId = req.params.orgId;
     console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
