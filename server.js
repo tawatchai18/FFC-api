@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const Person = require('./models/person')
-
 const MONGODB_URI =
   process.env.MONGODB_URI || 'mongodb://localhost:27017/ffc'
 const PORT = process.env.PORT || 7000
