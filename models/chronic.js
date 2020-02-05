@@ -16,7 +16,7 @@ Chronics.prototype.topChronic = function (top) {
     this.persons.forEach((person) => {
 
         var groupChronicByIcd10 = [];
-        person.chronics.forEach((chronic) => { 
+        person.chronics.forEach((chronic) => { // group by icd10
             var find = groupChronicByIcd10.find(value => value.disease.icd10 === chronic.disease.icd10);
             if (find === undefined) {
                 groupChronicByIcd10.push(chronic)
@@ -27,7 +27,7 @@ Chronics.prototype.topChronic = function (top) {
             const icd10 = chronic.disease.icd10;
             var findPersonCount = personCount.find(value => value.name === icd10);
 
-            if (findPersonCount === undefined) { 
+            if (findPersonCount === undefined) { // ตรวจสอบว่าใน personCount มีการประกาศโรคไว้หรือยัง
                 findPersonCount = {
                     name: icd10,
                     sum: 0
