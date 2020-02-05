@@ -6,7 +6,6 @@ Pyramid.prototype.result = {};
 
 Pyramid.prototype.perPersonData = function () {
 
-    console.log("create new date");
     const data = [
         {
             0: "0-9",
@@ -256,13 +255,6 @@ Pyramid.prototype.perPersonData = function () {
             }
         ]
     };
-    /*console.log(this.result.length, 'Length result');
-    console.log(total, 'Count result');
-    console.log(totalmale, "ชาย", totalfemale, "ผู้หญิง");
-    console.log(totalmale + totalfemale, "ชายบวกหญิง");
-    console.log(totalmale + totalfemale + countNotAge, "บวกทั้งหมด");
-    //ไม่ระบุเพศ
-    console.log(countNotAge, " Count else");*/
 
     return dataArray;
 };

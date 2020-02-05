@@ -5,14 +5,12 @@ const Chronics = require('./models/chronic');
 const Chronicdilldown = require('./models/chronicdilldown');
 const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
-// const timeout = require('connect-timeout')
 const rootPart = "/report";
 
 const express = require('express');
 const app = express();
 const apicache = require('apicache');
 const cache = apicache.middleware;
-// const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 const whitelist = [
     'https://report.ffc.in.th',
@@ -23,16 +21,14 @@ const corsOptions = {
         if (whitelist.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            // callback(new Error('Not allowed by CORS')); // ใช้จริงจะเอา comment ออก
             callback(null, true);
         }
     },
     credentials: true
 };
 
-// ตารางปิรามิดประชากร
 app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const query = [
         {
             "$match": {
@@ -52,15 +48,14 @@ app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) =
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(prePerson.perPersonData()); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const prePerson = new Pyramid(result); 
+        res.json(prePerson.perPersonData()); 
     });
 });
 
-// ผู้สูงอายุที่ถูกประเมิน
 app.get(rootPart + '/pyramid60up', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const query = [
         {
             "$match": {
@@ -80,15 +75,14 @@ app.get(rootPart + '/pyramid60up', cors(corsOptions), cache('6 hour'), (req, re
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const pyramid60up = new Pyramid60up(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(pyramid60up.pyramidData()); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const pyramid60up = new Pyramid60up(result); 
+        res.json(pyramid60up.pyramidData()); 
     });
 });
 
-// chronic
 app.get(rootPart + '/chronic', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const query = [
         {
             "$match": {
@@ -104,14 +98,14 @@ app.get(rootPart + '/chronic', cors(corsOptions), cache('6 hour'), (req, res) =
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronics.topChronic(-1)); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const chronics = new Chronics(result); 
+        res.json(chronics.topChronic(-1)); 
     });
 });
 
 app.get(rootPart + '/chronicdilldown', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const query = [
         {
             "$match": {
@@ -127,15 +121,14 @@ app.get(rootPart + '/chronicdilldown', cors(corsOptions), cache('6 hour'), (req
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const chronicdilldown = new Chronicdilldown(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronicdilldown.topChronic(-1)); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const chronicdilldown = new Chronicdilldown(result); 
+        res.json(chronicdilldown.topChronic(-1)); 
     });
 });
 
 app.get(rootPart + '/chronicdilldown/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
-    console.log(req.originalUrl, "Url");
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const orgId = req.params.orgId;
     const query = [
         {
@@ -153,15 +146,14 @@ app.get(rootPart + '/chronicdilldown/:orgId', cors(corsOptions), cache('6 hour'
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const chronicdilldown = new Chronicdilldown(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronicdilldown.topChronic(-1)); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const chronicdilldown = new Chronicdilldown(result); 
+        res.json(chronicdilldown.topChronic(-1)); 
     });
 });
 
 app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
-    console.log(req.originalUrl, "Url");
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+    const personDao = new FFC("person"); 
     const orgId = req.params.orgId;
     const query = [
         {
@@ -179,16 +171,14 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req,
             }
         }
     ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const chronics = new Chronics(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(chronics.topChronic(-1)); // เรียกใช้งาน
+    personDao.aggregateToArray(query, (result) => { 
+        const chronics = new Chronics(result); 
+        res.json(chronics.topChronic(-1)); 
     });
 });
 
-// idorg
 app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
     const orgId = req.params.orgId;
-    console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
 
     const query = [
@@ -219,10 +209,8 @@ app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('6 hour'), (req,
     });
 });
 
-// igorg ผู้สูงอายุที่ถูกประเมิน
 app.get(rootPart + '/pyramid60up/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
     const orgId = req.params.orgId;
-    console.log(orgId, 'perPersonData');
     const personDao = new FFC("person");
 
     const query = [
@@ -254,7 +242,7 @@ app.get(rootPart + '/pyramid60up/:orgId', cors(corsOptions), cache('6 hour'), (
 });
 
 // ชื่อหน่วยงาน
-const ignoreOrg = ["5dbbc89c698922acf8bc5789"];
+const ignoreOrg = [];
 app.get(rootPart + '/convert', cors(corsOptions), cache('6 hour'), (req, res) => {
     const orgDao = new FFC("organ");
 
@@ -269,11 +257,9 @@ app.get(rootPart + '/convert', cors(corsOptions), cache('6 hour'), (req, res) =
             }
         });
         res.json(data);
-        // console.log(data, '======');
     });
 });
 
-// อัตราส่วนผู้สูงอายุ
 app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('6 hour'), (req, res) => {
     const personDao = new FFC("person");
     const haveActivitiesQuery = [
@@ -300,8 +286,6 @@ app.get(rootPart + '/elderlyrat', cors(corsOptions), cache('6 hour'), (req, res
 
 app.get(rootPart + '/elderlyrat/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
     const orgId = req.params.orgId;
-    console.log(orgId, 'perPersonData');
-
     const personDao = new FFC("person");
     const haveActivitiesQuery = [
         {

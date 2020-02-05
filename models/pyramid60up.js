@@ -5,8 +5,6 @@ const Pyramid60up = function (result) {
 Pyramid60up.prototype.result = {};
 
 Pyramid60up.prototype.pyramidData = function () {
-
-    console.log("create new date");
     const data = [
         {
             0: "0-9",
