@@ -6,7 +6,7 @@ const Chronicdilldown = require('./models/chronicdilldown');
 const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
 const rootPart = "/report";
-var cron = require('node-cron');
+// var cron = require('node-cron');
 
 const express = require('express');
 const app = express();
@@ -31,7 +31,7 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-cron.schedule('*/1 * * * *', () => {
+// cron.schedule('*/1 * * * *', () => {
     app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
         const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
         const query = [
@@ -327,8 +327,8 @@ cron.schedule('*/1 * * * *', () => {
             res.json(activity.activity());
         });
     });
-    console.log('running a task every minute');
-});
+//     console.log('running a task every minute');
+// });
 
 app.listen(7000, () => {
     console.log('Application is running on port 7000')
