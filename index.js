@@ -327,7 +327,7 @@ cron.schedule('*/1 * * * *', () => {
             res.json(activity.activity());
         });
     });
-
+    console.log('running a task every minute');
 });
 
 app.listen(7000, () => {
