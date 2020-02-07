@@ -6,6 +6,7 @@ const Chronicdilldown = require('./models/chronicdilldown');
 const Activity = require('./models/activity');
 const ObjectID = require('mongodb').ObjectID;
 const rootPart = "/report";
+var cron = require('node-cron');
 
 const express = require('express');
 const app = express();
@@ -30,58 +31,64 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = [
-        {
-            "$match": {
-                "$and": [
-                    {
-                        "death.date": {
-                            "$exists": false
+cron.schedule('*/1 * * * *', () => {
+    app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
+        const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+        const query = [
+            {
+                "$match": {
+                    "$and": [
+                        {
+                            "death.date": {
+                                "$exists": false
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
+            },
+            {
+                "$project": {
+                    "birthDate": 1,
+                    "sex": 1
+                }
             }
-        },
-        {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
-            }
-        }
-    ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(prePerson.perPersonData()); // เรียกใช้งาน
+        ];
+        personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+            const prePerson = new Pyramid(result); // ตัวตัวเข้าถึง function perPersonData
+            res.json(prePerson.perPersonData()); // เรียกใช้งาน
+        });
     });
+    console.log('running a task every minute');
 });
 
+
 // ผู้สูงอายุที่ถูกประเมิน
-app.get(rootPart + '/pyramid60up', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
-    const query = [
-        {
-            "$match": {
-                "$and": [
-                    {
-                        "death.date": {
-                            "$exists": false
+cron.schedule('*/1 * * * *', () => {
+    app.get(rootPart + '/pyramid60up', cors(corsOptions), cache('6 hour'), (req, res) => {
+        const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
+        const query = [
+            {
+                "$match": {
+                    "$and": [
+                        {
+                            "death.date": {
+                                "$exists": false
+                            }
                         }
-                    }
-                ]
+                    ]
+                }
+            },
+            {
+                "$project": {
+                    "birthDate": 1,
+                    "sex": 1
+                }
             }
-        },
-        {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
-            }
-        }
-    ];
-    personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
-        const pyramid60up = new Pyramid60up(result); // ตัวตัวเข้าถึง function perPersonData
-        res.json(pyramid60up.pyramidData()); // เรียกใช้งาน
+        ];
+        personDao.aggregateToArray(query, (result) => { // ค้นหาแบบ toArray โดยจะได้ result ออกมาเลย
+            const pyramid60up = new Pyramid60up(result); // ตัวตัวเข้าถึง function perPersonData
+            res.json(pyramid60up.pyramidData()); // เรียกใช้งาน
+        });
     });
 });
 
@@ -185,70 +192,74 @@ app.get(rootPart + '/chronic/:orgId', cors(corsOptions), cache('6 hour'), (req,
 });
 
 // idorg
-app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const orgId = req.params.orgId;
-    console.log(orgId, 'perPersonData');
-    const personDao = new FFC("person");
+cron.schedule('*/1 * * * *', () => {
+    app.get(rootPart + '/pyramid/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
+        const orgId = req.params.orgId;
+        console.log(orgId, 'perPersonData');
+        const personDao = new FFC("person");
 
-    const query = [
-        {
-            "$match": {
-                "$and": [
-                    {
-                        "death.date": {
-                            "$exists": false
+        const query = [
+            {
+                "$match": {
+                    "$and": [
+                        {
+                            "death.date": {
+                                "$exists": false
+                            }
+                        },
+                        {
+                            "orgIndex": ObjectID(orgId)
                         }
-                    },
-                    {
-                        "orgIndex": ObjectID(orgId)
-                    }
-                ]
+                    ]
+                }
+            },
+            {
+                "$project": {
+                    "birthDate": 1,
+                    "sex": 1
+                }
             }
-        },
-        {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
-            }
-        }
-    ];
-    personDao.aggregateToArray(query, (result) => {
-        const prePerson = new Pyramid(result);
-        res.json(prePerson.perPersonData());
+        ];
+        personDao.aggregateToArray(query, (result) => {
+            const prePerson = new Pyramid(result);
+            res.json(prePerson.perPersonData());
+        });
     });
 });
 
 // igorg ผู้สูงอายุที่ถูกประเมิน
-app.get(rootPart + '/pyramid60up/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
-    const orgId = req.params.orgId;
-    console.log(orgId, 'perPersonData');
-    const personDao = new FFC("person");
+cron.schedule('*/1 * * * *', () => {
+    app.get(rootPart + '/pyramid60up/:orgId', cors(corsOptions), cache('6 hour'), (req, res) => {
+        const orgId = req.params.orgId;
+        console.log(orgId, 'perPersonData');
+        const personDao = new FFC("person");
 
-    const query = [
-        {
-            "$match": {
-                "$and": [
-                    {
-                        "death.date": {
-                            "$exists": false
+        const query = [
+            {
+                "$match": {
+                    "$and": [
+                        {
+                            "death.date": {
+                                "$exists": false
+                            }
+                        },
+                        {
+                            "orgIndex": ObjectID(orgId)
                         }
-                    },
-                    {
-                        "orgIndex": ObjectID(orgId)
-                    }
-                ]
+                    ]
+                }
+            },
+            {
+                "$project": {
+                    "birthDate": 1,
+                    "sex": 1
+                }
             }
-        },
-        {
-            "$project": {
-                "birthDate": 1,
-                "sex": 1
-            }
-        }
-    ];
-    personDao.aggregateToArray(query, (result) => {
-        const pyramid60up = new Pyramid60up(result);
-        res.json(pyramid60up.pyramidData());
+        ];
+        personDao.aggregateToArray(query, (result) => {
+            const pyramid60up = new Pyramid60up(result);
+            res.json(pyramid60up.pyramidData());
+        });
     });
 });
 
