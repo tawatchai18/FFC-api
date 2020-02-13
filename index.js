@@ -31,7 +31,7 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-cron.schedule('*/1 * * * *', () => {
+cron.schedule('*/5 * * * *', () => {
     app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
         const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
         const query = [
