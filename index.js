@@ -31,7 +31,7 @@ const corsOptions = {
 };
 
 // ตารางปิรามิดประชากร
-cron.schedule('*/5 * * * *', () => {
+// cron.schedule('*/5 * * * *', () => {
     app.get(rootPart + '/pyramid', cors(corsOptions), cache('6 hour'), (req, res) => {
         const personDao = new FFC("person"); // สร้างตัวเข้าถึงฐานข้อมูล ffc ที่ person
         const query = [
@@ -328,7 +328,7 @@ cron.schedule('*/5 * * * *', () => {
         });
     });
     console.log('running a task every minute');
-});
+// });
 
 app.listen(7000, () => {
     console.log('Application is running on port 7000')
